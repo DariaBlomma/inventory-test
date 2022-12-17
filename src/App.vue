@@ -17,9 +17,12 @@ import TheWelcome from './components/TheWelcome.vue'
   </main>
 </template>
 
-<style scoped>
+<style scoped lang="scss">
+@import '@/styles/variables.scss';
+
 header {
   line-height: 1.5;
+  color: $green;
 }
 
 .logo {
