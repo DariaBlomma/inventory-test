@@ -61,8 +61,11 @@ const cancelClick = () => {
 };
 
 const submitInventoryDelete = ({ value } : IOnDialogConfirm) => {
-  console.log('value: ', value);
-
+  if (typeof value !== 'number') return;
+  inventoryStore.decreaseItemAmount(value);
+  if (inventoryStore.clickedItem === undefined) {
+    modalStore.close();
+  }
 };
 
 </script>

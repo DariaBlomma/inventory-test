@@ -11,11 +11,12 @@
         class="field__cell"
       >
         <template
-          v-for="item in inventoryList"
+          v-for="item in inventoryStore.list"
           :key="item.type"
         >
           <div
-            v-if="item.curRow === rowIndex && item.curCol === colIndex"
+            v-if="item.curRow === rowIndex &&
+              item.curCol === colIndex"
             @click="inventoryItemClickHandler({ item })"
           >
             <img 
@@ -40,30 +41,6 @@ const rows: number = 5;
 const columns: number = 5;
 const modalStore = useModalStore();
 const inventoryStore = useInventoryStore();
-
-const inventoryList : IInventoryItem[] = [
-  { 
-    type: 'green',
-    amount: 4,
-    curRow: 0,
-    curCol: 0,
-    image: 'ItemImageGreen'
-  },
-  { 
-    type: 'yellow',
-    amount: 2,
-    curRow: 0,
-    curCol: 1,
-    image: 'ItemImageYellow',
-  },
-  { 
-    type: 'blue',
-    amount: 3,
-    curRow: 0,
-    curCol: 2,
-    image: 'ItemImageBlue',
-  },
-];
 
 interface IParama {
   item: IInventoryItem,
