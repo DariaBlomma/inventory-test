@@ -1,0 +1,13 @@
+@import './variables.scss';
+
+.block {
+  background-color: $black_800;
+  border: 1px solid $black_600;
+  border-radius: $block-border-radius;
+}
+
+.flex-centered {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}

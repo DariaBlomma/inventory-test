@@ -1,46 +1,41 @@
 <script setup lang="ts">
-import HelloWorld from './components/HelloWorld.vue'
-import TheWelcome from './components/TheWelcome.vue'
+  import LeftSidebar from './components/LeftSidebar.vue';
+  import BottomSidebar from './components/BottomSidebar.vue';
+  import SlotsFeild from './components/SlotsField.vue';
+  import InventoryDetailModal from './components/InventoryDetailModal.vue';
 </script>
 
 <template>
-  <header>
-    <img alt="Vue logo" class="logo" src="./assets/logo.svg" width="125" height="125" />
-
-    <div class="wrapper">
-      <HelloWorld msg="You did it!" />
+  <div class="game-area">
+    <LeftSidebar />
+    <div class="slots">
+      <SlotsFeild />
+      <InventoryDetailModal />
     </div>
-  </header>
-
-  <main>
-    <TheWelcome />
-  </main>
+    <BottomSidebar />
+  </div>
 </template>
 
 <style scoped lang="scss">
-@import '@/styles/variables.scss';
+@import '@/styles';
 
-header {
-  line-height: 1.5;
-  color: $green;
+.game-area {
+  padding: 32px;
+  display: grid;
+  grid-template-areas: 
+    'leftSidebar slots' 
+    'bottomSidebar bottomSidebar';
+  grid-template-columns: 1fr 2fr;
+  grid-template-rows: 500px 72px;
+  grid-gap: 24px;
 }
 
-.logo {
-  display: block;
-  margin: 0 auto 2rem;
+.slots {
+  grid-area: slots;
+  position: relative;
 }
 
 @media (min-width: 1024px) {
-  header {
-    display: flex;
-    place-items: center;
-    padding-right: calc(var(--section-gap) / 2);
-  }
-
-  .logo {
-    margin: 0 2rem 0 0;
-  }
-
   header .wrapper {
     display: flex;
     place-items: flex-start;
