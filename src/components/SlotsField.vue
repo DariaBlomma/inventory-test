@@ -1,6 +1,6 @@
 <template>
   <div class="block field">
-    <div 
+    <div
       v-for="(row, rowIndex) in rows"
       :key="rowIndex"
       class="field__row"
@@ -9,47 +9,51 @@
         v-for="(column, colIndex) in columns"
         :key="colIndex"
         class="field__cell"
+        :data-row-id="rowIndex"
+        :data-col-id="colIndex"
+        @dragover.prevent="onDragOver"
+        @drop="inventoryStore.onDropItem"
       >
-        <template
-          v-for="item in inventoryStore.list"
+        <div
+          v-for="item in inventoryStore.slotsList"
           :key="item.type"
         >
-          <div
+          <InventoryItem 
             v-if="item.curRow === rowIndex &&
-              item.curCol === colIndex"
+                item.curCol === colIndex"
+            :inner="{item}"
             @click="inventoryItemClickHandler({ item })"
-          >
-            <img 
-              :src="`/inventoryImages/${item.image}.png`" 
-              class="inventory__image"
-            >
-            <div class="inventory__amount">
-              <span class="inventory__amount--text">{{ item.amount }}</span>
-            </div>
-          </div>
-        </template>
+          />
+        </div>
       </div>
     </div>
   </div>
 </template>
 
 <script setup lang="ts">
-import { useModalStore, useInventoryStore } from '@/stores';
-import type { IInventoryItem } from '@/types';
+import type {IInventoryItem} from '@/types';
+import InventoryItem from './InventoryItem.vue';
+import {useInventoryStore, useModalStore} from '@/stores';
 
 const rows: number = 5;
 const columns: number = 5;
 const modalStore = useModalStore();
 const inventoryStore = useInventoryStore();
 
-interface IParama {
+interface IParams {
   item: IInventoryItem,
 }
 
-const inventoryItemClickHandler = ({ item } : IParama) => {
+const inventoryItemClickHandler = ({item}: IParams) => {
   inventoryStore.setClickedItem(item);
   modalStore.open();
+};
+
+const onDragOver = (e: DragEvent) => {
+  // console.log('e onDragOver: ', e);
+
 }
+
 </script>
 
 <style scoped lang="scss">
@@ -64,7 +68,7 @@ const inventoryItemClickHandler = ({ item } : IParama) => {
 
   &__row {
     display: grid;
-    grid-template-columns: repeat(5, 1fr);    
+    grid-template-columns: repeat(5, 1fr);
     width: 100%;
   }
 
@@ -84,30 +88,14 @@ const inventoryItemClickHandler = ({ item } : IParama) => {
   }
 }
 
-.inventory {
-  &__amount {
-    position: absolute;
-    bottom: 0;
-    right: 0;
-    width: 16px;
-    height: 16px;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    border: 1px solid $black_600;
-    border-top-left-radius: 6px;
-
-
-    &--text {
-      color: white;
-      font-family: 'Inter';
-      font-style: normal;
-      font-weight: 500;
-      font-size: 10px;
-      line-height: 12px;
-      opacity: 0.4;
-    }
-  }
+.init-list, .to-list {
+  display: flex;
+  margin-top: 10px;
+  gap: 10px;
 }
 
+.to-list {
+  height: 50px;
+  border: 1px solid white;
+}
 </style>

@@ -1,12 +1,7 @@
-<script setup lang="ts">
-  import LeftSidebar from './components/LeftSidebar.vue';
-  import BottomSidebar from './components/BottomSidebar.vue';
-  import SlotsFeild from './components/SlotsField.vue';
-  import InventoryDetailModal from './components/InventoryDetailModal.vue';
-</script>
-
 <template>
   <div class="game-area">
+    <DragErrorMessage />
+    <FreeInventoryList />
     <LeftSidebar />
     <div class="slots">
       <SlotsFeild />
@@ -16,6 +11,15 @@
   </div>
 </template>
 
+<script setup lang="ts">
+  import LeftSidebar from './components/LeftSidebar.vue';
+  import BottomSidebar from './components/BottomSidebar.vue';
+  import SlotsFeild from './components/SlotsField.vue';
+  import InventoryDetailModal from './components/InventoryDetailModal.vue';
+  import FreeInventoryList from './components/FreeInventoryList.vue';
+  import DragErrorMessage from './components/DragErrorMessage.vue';
+</script>
+
 <style scoped lang="scss">
 @import '@/styles';
 
@@ -23,10 +27,12 @@
   padding: 32px;
   display: grid;
   grid-template-areas: 
+    'error error'
+    'freeList freeList'
     'leftSidebar slots' 
     'bottomSidebar bottomSidebar';
   grid-template-columns: 1fr 2fr;
-  grid-template-rows: 500px 72px;
+  grid-template-rows: 1fr 1fr 500px 72px;
   grid-gap: 24px;
 }
 
