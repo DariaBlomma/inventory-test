@@ -53,7 +53,8 @@ const validateNumbers = (value: number | undefined ) => {
 };
 
 const onInput = (event: Event) => {
-  value.value = event?.target?.value;
+  if (!event || !event.target) return;
+  value.value = (event.target as HTMLInputElement).value;
 
   if (props.inner.type === 'number') {
     const emitVal : number | undefined = value.value ? Number(value.value) : undefined;
@@ -61,14 +62,14 @@ const onInput = (event: Event) => {
     validateNumbers(emitVal);
     props.inner.onInput({ 
       event, 
-      value: emitVal, 
+      valueNumber: emitVal,
       isValid: isValid.value 
     })
   }
   if (props.inner.type === 'text') {
     props.inner.onInput({ 
       event, 
-      value: value.value.trim(),
+      valueString: value.value.trim(),
       isValid: isValid.value,
     })
   }

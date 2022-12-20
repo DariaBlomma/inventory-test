@@ -4,7 +4,8 @@ export interface IMyErrorMessage {
 
 export interface IInputEventParams {
   event: Event,
-  value: string | number | undefined,
+  valueString?: string,
+  valueNumber?: number | undefined,
   isValid: boolean,
 }
 
@@ -16,5 +17,5 @@ export interface IMyInputProps {
     min?: number,
     max?: number,
   }
-  onInput: ({ event, value, isValid }: IInputEventParams) => void;
+  onInput: ({ event, valueString, valueNumber, isValid }: IInputEventParams) => void;
 }

@@ -60,12 +60,10 @@ const modalStore = useModalStore();
 const isInputValid = ref(false);
 const inputNumberValue = ref(0);
 
-const onInput = ({ value, isValid} : IInputEventParams) => {
+const onInput = ({ valueNumber, isValid } : IInputEventParams) => {
   isInputValid.value = isValid;
-  if (isValid && value !== undefined) {
-    if (typeof value === 'number') {
-      inputNumberValue.value = value;
-    }
+  if (isValid && valueNumber !== undefined) {
+      inputNumberValue.value = valueNumber;
   }
 } 
 </script>
