@@ -12,12 +12,19 @@
 </template>
 
 <script setup lang="ts">
+  import { onBeforeMount } from 'vue';
   import LeftSidebar from './components/LeftSidebar.vue';
   import BottomSidebar from './components/BottomSidebar.vue';
   import SlotsFeild from './components/SlotsField.vue';
   import InventoryDetailModal from './components/InventoryDetailModal.vue';
   import FreeInventoryList from './components/FreeInventoryList.vue';
   import DragErrorMessage from './components/DragErrorMessage.vue';
+  import { useInventoryStore } from '@/stores';
+
+  onBeforeMount(() => {
+    const inventoryStore = useInventoryStore();
+    inventoryStore.getLists();
+  });
 </script>
 
 <style scoped lang="scss">

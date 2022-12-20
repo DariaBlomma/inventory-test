@@ -21,16 +21,17 @@
           @drop="inventoryStore.onDropItem"
       >
         <div
-            v-for="item in inventoryStore.slotsList"
-            :key="item.type"
+          v-for="item in inventoryStore.slotsList"
+          :key="item.type"
         >
           <InventoryItem
-              v-if="item.curRow === rowIndex &&
-                item.curCol === colIndex"
-              :inner="{item}"
-              @click="inventoryItemClickHandler({ item })"
-              draggable="true"
-              @dragstart="inventoryStore.onDragItemStart({ event: $event, item })"
+            class="item-in-slot"
+            v-if="item.curRow === rowIndex &&
+              item.curCol === colIndex"
+            :inner="{item}"
+            @click="inventoryItemClickHandler({ item })"
+            draggable="true"
+            @dragstart="inventoryStore.onDragItemStart({ event: $event, item })"
           />
         </div>
       </div>
@@ -92,5 +93,9 @@ const inventoryItemClickHandler = ({item}: IParams) => {
       background-color: $black_700;
     }
   }
+}
+
+.item-in-slot {
+  position: static;
 }
 </style>

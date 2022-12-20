@@ -1,6 +1,7 @@
 import { ref } from 'vue'
 import { defineStore } from 'pinia';
 import type { IInventoryItem, TListType } from '@/types';
+import { LocalStorageHelper} from '@/helpers';
 
 interface IDeleteParams {
   type: string;
@@ -31,7 +32,8 @@ export const useInventoryStore = defineStore('inventory', () => {
   /**
    * Items not in store yet
    */
-  const freeList = ref<IInventoryItem[] | []>([
+
+  const defaultFreeList: IInventoryItem[] = [
     { 
       type: 'green',
       amount: 4,
@@ -56,7 +58,9 @@ export const useInventoryStore = defineStore('inventory', () => {
       image: 'ItemImageBlue',
       list: 'free',
     },
-  ]);
+  ];
+
+  const freeList = ref<IInventoryItem[]>(defaultFreeList);
 
   const slotsList = ref<IInventoryItem[]>([]);
 
@@ -69,6 +73,15 @@ export const useInventoryStore = defineStore('inventory', () => {
   const dragOverParams = ref<IDragOverParams | undefined>(undefined);
   const draggedFromElem = ref<HTMLDivElement | undefined>(undefined);
 
+  const getLists = () => {
+    const savedFreeList = LocalStorageHelper.getFreeList();
+    const savedSlotsList = LocalStorageHelper.getSlotsList();
+    //* first load of the app
+    if (!savedFreeList || !savedSlotsList) return;
+    freeList.value = savedFreeList;
+    slotsList.value = savedSlotsList;
+  };
+
   const setClickedItem = (item: IInventoryItem) => {
     clickedItem.value = item;
   };
@@ -80,6 +93,7 @@ export const useInventoryStore = defineStore('inventory', () => {
         deleteItem({ type: clickedItem.value.type, list: 'slots' });
         clickedItem.value = undefined;   
       }
+      LocalStorageHelper.setSlotsList(slotsList.value);
     }
   };
 
@@ -130,9 +144,13 @@ export const useInventoryStore = defineStore('inventory', () => {
 
     draggedItem.value = undefined;
 
-    if (!draggedFromElem.value) return;
-    // * clear previous place, mark as free
-    draggedFromElem.value.dataset.isBusy = 'false';
+    if (draggedFromElem.value) {
+      // * clear previous place, mark as free
+      draggedFromElem.value.dataset.isBusy = 'false';
+    }
+
+    LocalStorageHelper.setFreeList(freeList.value);
+    LocalStorageHelper.setSlotsList(slotsList.value);
   };
 
   /** 
@@ -207,6 +225,7 @@ export const useInventoryStore = defineStore('inventory', () => {
     slotsList,
     clickedItem, 
     dragOverParams,
+    getLists,
     setClickedItem,
     decreaseItemAmount,
     deleteItem, 
