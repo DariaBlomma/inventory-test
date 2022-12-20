@@ -1,28 +1,36 @@
 <template>
   <div class="block field">
     <div
-      v-for="(row, rowIndex) in rows"
-      :key="rowIndex"
-      class="field__row"
+        v-for="(row, rowIndex) in rows"
+        :key="rowIndex"
+        class="field__row"
     >
       <div
-        v-for="(column, colIndex) in columns"
-        :key="colIndex"
-        class="field__cell"
-        :data-row-id="rowIndex"
-        :data-col-id="colIndex"
-        @dragover.prevent="onDragOver"
-        @drop="inventoryStore.onDropItem"
+          v-for="(column, colIndex) in columns"
+          :key="colIndex"
+          class="field__cell"
+          :class="{
+          'field__cell--isDraggedOver': 
+          inventoryStore.dragOverParams?.colId === colIndex &&
+          inventoryStore.dragOverParams?.rowId === rowIndex
+        }"
+          :data-row-id="rowIndex"
+          :data-col-id="colIndex"
+          :data-is-busy="false"
+          @dragover.prevent="inventoryStore.onDragOverCell"
+          @drop="inventoryStore.onDropItem"
       >
         <div
-          v-for="item in inventoryStore.slotsList"
-          :key="item.type"
+            v-for="item in inventoryStore.slotsList"
+            :key="item.type"
         >
-          <InventoryItem 
-            v-if="item.curRow === rowIndex &&
+          <InventoryItem
+              v-if="item.curRow === rowIndex &&
                 item.curCol === colIndex"
-            :inner="{item}"
-            @click="inventoryItemClickHandler({ item })"
+              :inner="{item}"
+              @click="inventoryItemClickHandler({ item })"
+              draggable="true"
+              @dragstart="inventoryStore.onDragItemStart({ event: $event, item })"
           />
         </div>
       </div>
@@ -48,12 +56,6 @@ const inventoryItemClickHandler = ({item}: IParams) => {
   inventoryStore.setClickedItem(item);
   modalStore.open();
 };
-
-const onDragOver = (e: DragEvent) => {
-  // console.log('e onDragOver: ', e);
-
-}
-
 </script>
 
 <style scoped lang="scss">
@@ -85,17 +87,10 @@ const onDragOver = (e: DragEvent) => {
     &:hover {
       background-color: $black_700;
     }
+
+    &--isDraggedOver {
+      background-color: $black_700;
+    }
   }
-}
-
-.init-list, .to-list {
-  display: flex;
-  margin-top: 10px;
-  gap: 10px;
-}
-
-.to-list {
-  height: 50px;
-  border: 1px solid white;
 }
 </style>

@@ -1,10 +1,10 @@
 import { ref } from 'vue'
 import { defineStore } from 'pinia';
-import type { IInventoryItem } from '@/types';
+import type { IInventoryItem, TListType } from '@/types';
 
 interface IDeleteParams {
   type: string;
-  list: 'free' | 'slots',
+  list: TListType,
 }
 
 interface IAddParams {
@@ -14,6 +14,11 @@ interface IAddParams {
 interface IDragStart {
   event: DragEvent;
   item: IInventoryItem;
+}
+
+interface IDragOverParams {
+  colId: number;
+  rowId: number;
 }
 
 export const useInventoryStore = defineStore('inventory', () => {
@@ -30,27 +35,30 @@ export const useInventoryStore = defineStore('inventory', () => {
     { 
       type: 'green',
       amount: 4,
-      curRow: 0,
-      curCol: 0,
-      image: 'ItemImageGreen'
+      curRow: null,
+      curCol: null,
+      image: 'ItemImageGreen',
+      list: 'free',
     },
     { 
       type: 'yellow',
       amount: 2,
-      curRow: 0,
-      curCol: 1,
+      curRow: null,
+      curCol: null,
       image: 'ItemImageYellow',
+      list: 'free',
     },
     { 
       type: 'blue',
       amount: 3,
-      curRow: 0,
-      curCol: 2,
+      curRow: null,
+      curCol: null,
       image: 'ItemImageBlue',
+      list: 'free',
     },
   ]);
 
-  const slotsList = ref<IInventoryItem[] | []>([]);
+  const slotsList = ref<IInventoryItem[]>([]);
 
   //items
   const clickedItem = ref<IInventoryItem | undefined>(undefined);
@@ -58,6 +66,8 @@ export const useInventoryStore = defineStore('inventory', () => {
 
   //other data
   const dragError = ref<string>('');
+  const dragOverParams = ref<IDragOverParams | undefined>(undefined);
+  const draggedFromElem = ref<HTMLDivElement | undefined>(undefined);
 
   const setClickedItem = (item: IInventoryItem) => {
     clickedItem.value = item;
@@ -91,37 +101,103 @@ export const useInventoryStore = defineStore('inventory', () => {
     event.dataTransfer.dropEffect = 'move';
     event.dataTransfer.effectAllowed = 'move';
     draggedItem.value = item;
-    console.log('draggedItem.value: ', draggedItem.value);
+    const target = getElemFromEvent(event);
+    if (!target) return;
+    draggedFromElem.value = target;
   };
 
   const onDropItem = (event: DragEvent) => {
-    console.log('e: ', event);
-    if (!isDragValid.value) {
-      dragError.value = 'Drag is invalid - the field is already busy';
-      console.error('Error in onDrop: drag is invalid!');
-      return;
-    }
-    dragError.value = '';
-    if (!draggedItem.value) return;
-    const target = event.target;
-    if (!event ||
-        !event.target ||
-        !event.target.dataset) return;
+    dragOverParams.value = undefined;
 
-    const dataset = event.target.dataset;
-    console.log('dataset: ', dataset);
-    const toRowIndex = Number(dataset.rowId);
-    const toColId = Number(dataset.colId);
-    draggedItem.value.curRow = toRowIndex;
-    draggedItem.value.curCol = toColId;
-    console.log('toRowIndex: ', toRowIndex);
-    deleteItem({ type: draggedItem.value.type, list: 'free' });
+    const isValid = checkIsDragValid(event);
+    if (!isValid) return;
+
+    if (!draggedItem.value) return;
+    const params = getDataFromEvent(event);
+    if (!params) return;
+
+    const { colId, rowId } = params;
+    draggedItem.value.curRow = rowId;
+    draggedItem.value.curCol = colId;
+    deleteItem({ type: draggedItem.value.type, list: draggedItem.value.list });
     addItem({ item: draggedItem.value });
-    console.log('slotsList', slotsList.value)
+
+    draggedItem.value.list = 'slots';
+
+    const target = getElemFromEvent(event);
+    if (!target) return;
+    target.dataset.isBusy = 'true';
+
+    draggedItem.value = undefined;
+
+    if (!draggedFromElem.value) return;
+    // * clear previous place, mark as free
+    draggedFromElem.value.dataset.isBusy = 'false';
   };
 
-  const checkDragValidity = () => {
+  /** 
+   * To indicate with styles the cell
+  */
+  const onDragOverCell = (event: DragEvent) => {
+    const params = getDataFromEvent(event);
+    if (!params) return;
 
+    dragOverParams.value = params;
+  };
+
+  /**
+   * Get field_cell's row and column properties
+   * @param event 
+   * @returns 
+   */
+  const getDataFromEvent = (event: DragEvent) : IDragOverParams | void => {
+    const target = getElemFromEvent(event);
+    if (!target) return;
+
+    const dataset = target.dataset;
+    const toRowIndex = Number(dataset.rowId);
+    const toColId = Number(dataset.colId);
+    return {
+      colId: toColId,
+      rowId: toRowIndex,
+    };
+  }
+
+  /** 
+   * Check if the place is already busy or not
+  */
+  const checkIsDragValid = (event: DragEvent) : boolean => {
+    const target = getElemFromEvent(event);
+    if (!target) return false;
+
+    const condition = target.dataset.isBusy === 'true';
+    if (condition) {
+      draggedItem.value = undefined;
+      isDragValid.value = false;
+      dragError.value = 'Drag is invalid - the field is already busy';
+      console.error('Error in onDrop: drag is invalid!');
+      return false;
+    }
+
+    isDragValid.value = true;
+    dragError.value = '';
+
+    return true;
+  };
+
+  /**
+   * Get field__cell from event.target
+   * @param event 
+   * @returns 
+   */
+  const getElemFromEvent = (event: DragEvent) : HTMLDivElement | void => {
+    //field cells always have dataset with their coords
+    if (!event ||
+      !event.target
+    ) return;
+    const target = (event.target as HTMLElement).closest('.field__cell');
+    if (!target || !(target as HTMLDivElement).dataset) return;
+    return target as HTMLDivElement;
   }
 
   return {
@@ -130,11 +206,13 @@ export const useInventoryStore = defineStore('inventory', () => {
     freeList,
     slotsList,
     clickedItem, 
+    dragOverParams,
     setClickedItem,
     decreaseItemAmount,
     deleteItem, 
     addItem,
     onDragItemStart,
     onDropItem,
+    onDragOverCell,
   };
 })
