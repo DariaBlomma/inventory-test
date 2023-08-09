@@ -1,13 +1,13 @@
 /**
  * Indicates, to which list belongs item
  */
-export type TListType = 'free' | 'slots';
+export type ListType = 'free' | 'slots';
 
-export interface IInventoryItem {
+export interface InventoryDetail {
   type: string,
   amount: number,
   curRow: number | null,
   curCol: number | null,
   image: string,
-  list: TListType,
+  list: ListType,
 }

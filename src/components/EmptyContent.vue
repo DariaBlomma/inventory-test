@@ -15,12 +15,12 @@
 		setup
 		lang="ts"
 >
-interface IProps {
+interface Props {
 	amount?: number,
 	baseClass?: string;
 }
 
-const props = withDefaults(defineProps<IProps>(), {
+const props = withDefaults(defineProps<Props>(), {
 	amount: 7,
 });
 </script>

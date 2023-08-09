@@ -9,7 +9,6 @@
 import { useInventoryStore } from '@/stores';
 
 const inventoryStore = useInventoryStore();
-
 </script>
 
 <style

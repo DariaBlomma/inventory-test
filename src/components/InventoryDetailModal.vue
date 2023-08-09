@@ -28,18 +28,14 @@
 			</div>
 			<div class="inventory-detail__dialog">
 				<MyDialog
-						:inner="{
-            input: {
-              type: 'number',
-              placeholder: 'Enter amount',
-              validation: {
+						type="number"
+						placeholder="Enter amount"
+						:validation="{
                 min: 0,
                 max: inventoryStore.clickedItem?.amount,
-              },
-            },
-            onCancel: cancelClick,
-            onConfirm: submitInventoryDelete,
-          }"
+              }"
+						:onCancel="cancelClick"
+						:onConfirm="submitInventoryDelete"
 				/>
 			</div>
 		</div>
@@ -53,7 +49,7 @@
 import MyButton from '@/components/ui/MyButton.vue';
 import MyModal from '@/components/ui/MyModal.vue';
 import MyDialog from '@/components/ui/MyDialog.vue';
-import type { IOnDialogConfirm } from '@/types';
+import type { OnDialogConfirm } from '@/types';
 import {
 	useInventoryStore,
 	useModalStore,
@@ -66,7 +62,7 @@ const cancelClick = () => {
 	modalStore.closeDialog();
 };
 
-const submitInventoryDelete = ({value}: IOnDialogConfirm) => {
+const submitInventoryDelete = ({value}: OnDialogConfirm) => {
 	if (typeof value !== 'number') return;
 	inventoryStore.decreaseItemAmount(value);
 	if (inventoryStore.clickedItem === undefined) {

@@ -2,41 +2,39 @@
 	<div
 			v-if="modalStore.isDialogOpen"
 			class="dialog"
-			:class="inner.dialogClass"
+			:class="props.dialogClass"
 	>
 		<MyInput
-				:inner="{
-        type: inner.input.type,
-        placeholder: inner.input.placeholder,
-        validation: {
-          min: inner.input.validation?.min,
-          max: inner.input.validation?.max,
-        },
-        onInput: onInput,
-      }"
+				:type="props.type"
+				:placeholder="props.placeholder"
+				:validation="{
+          min: props.validation?.min,
+          max: props.validation?.max,
+        }"
+				:on-input="onInput"
 				class="dialog__input"
-				:class="inner.input.customClass"
+				:class="props.customClass"
 		/>
 		<div class="dialog__footer">
 			<MyButton
 					class="dialog__btn dialog__cancel-btn"
 					name="Cancel"
 					:class="[
-          `${inner.dialogClass}__btn`,
-          `${inner.dialogClass}__cancel-btn`
+          `${props.dialogClass}__btn`,
+          `${props.dialogClass}__cancel-btn`
           ]"
 					:is-disabled="false"
-					@click="inner.onCancel"
+					@click="props.onCancel"
 			/>
 			<MyButton
 					class="dialog__btn dialog__confirm-btn"
 					name="Confirm"
 					:class="[
-          `${inner.dialogClass}__btn`,
-          `${inner.dialogClass}__confirm-btn`]
+          `${props.dialogClass}__btn`,
+          `${props.dialogClass}__confirm-btn`]
           "
 					:is-disabled="!isInputValid"
-					@click="inner.onConfirm({ value: inputNumberValue })"
+					@click="props.onConfirm({ value: inputNumberValue })"
 			/>
 		</div>
 	</div>
@@ -46,30 +44,36 @@
 		setup
 		lang="ts"
 >
-import {
-	ref,
-	toRefs,
-} from 'vue';
+import { ref } from 'vue';
 import MyInput from '@/components/ui/MyInput.vue';
 import MyButton from '@/components/ui/MyButton.vue';
 import type {
-	IInputEventParams,
-	IMyDialogProps,
+	InputEventParams,
+	OnDialogConfirm,
 } from '@/types';
 import { useModalStore } from '@/stores';
 
-interface IProps {
-	inner: IMyDialogProps,
+interface Props {
+	type: string,
+	placeholder?: string,
+	customClass?: string,
+	validation?: {
+		min?: number,
+		max?: number,
+	},
+	dialogClass?: string;
+	onConfirm: ({value}: OnDialogConfirm) => void,
+	onCancel: () => void,
 }
 
-const props = defineProps<IProps>();
-const {inner} = toRefs(props);
+// todo - add visual reaction to OnConfirm
+const props = defineProps<Props>();
 const modalStore = useModalStore();
 
 const isInputValid = ref(false);
 const inputNumberValue = ref(0);
 
-const onInput = ({valueNumber, isValid}: IInputEventParams) => {
+const onInput = ({valueNumber, isValid}: InputEventParams) => {
 	isInputValid.value = isValid;
 	if (isValid && valueNumber !== undefined) {
 		inputNumberValue.value = valueNumber;

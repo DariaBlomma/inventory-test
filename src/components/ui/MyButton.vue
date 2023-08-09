@@ -4,7 +4,7 @@
 			class="btn"
 			:disabled="isDisabled"
 	>
-		{{ props.name }}
+		{{ name }}
 	</button>
 </template>
 
@@ -12,14 +12,10 @@
 		setup
 		lang="ts"
 >
-import { toRefs } from 'vue';
-
-const props = defineProps<{
+defineProps<{
 	name: string,
 	isDisabled: boolean,
 }>();
-
-const {isDisabled} = toRefs(props);
 </script>
 
 <style

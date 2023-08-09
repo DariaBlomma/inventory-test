@@ -28,8 +28,8 @@
 							class="item-in-slot"
 							v-if="item.curRow === rowIndex &&
               item.curCol === colIndex"
-							:inner="{item}"
-							@click="inventoryItemClickHandler({ item })"
+							:item="item"
+							@click="inventoryItemClickHandler(item)"
 							draggable="true"
 							@dragstart="inventoryStore.onDragItemStart({ event: $event, item })"
 					/>
@@ -43,7 +43,7 @@
 		setup
 		lang="ts"
 >
-import type { IInventoryItem } from '@/types';
+import type { InventoryDetail } from '@/types';
 import InventoryItem from './InventoryItem.vue';
 import {
 	useInventoryStore,
@@ -55,11 +55,7 @@ const columns: number = 5;
 const modalStore = useModalStore();
 const inventoryStore = useInventoryStore();
 
-interface IParams {
-	item: IInventoryItem,
-}
-
-const inventoryItemClickHandler = ({item}: IParams) => {
+const inventoryItemClickHandler = (item: InventoryDetail) => {
 	inventoryStore.setClickedItem(item);
 	modalStore.open();
 };

@@ -2,14 +2,14 @@
 	<div class="container">
 		<input
 				:value="value"
-				:type="props.inner.type"
-				:placeholder="props.inner.placeholder"
+				:type="props.type"
+				:placeholder="props.placeholder"
 				class="input"
-				:class="props.inner.customClass"
+				:class="props.customClass"
 				@input="onInput"
 		>
 		<MyErrorMessage
-				:inner="{error}"
+				:error="error"
 		/>
 	</div>
 </template>
@@ -20,25 +20,32 @@
 >
 import { ref } from 'vue';
 import MyErrorMessage from '@/components/ui/MyErrorMessage.vue';
-import type { IMyInputProps } from '@/types';
+import type { InputEventParams } from '@/types';
 
-interface IProps {
-	inner: IMyInputProps,
+interface Props {
+	type: string,
+	placeholder?: string,
+	customClass?: string,
+	validation?: {
+		min?: number,
+		max?: number,
+	}
+	onInput: ({event, valueString, valueNumber, isValid}: InputEventParams) => void;
 }
 
-const props = defineProps<IProps>();
+const props = defineProps<Props>();
 
 const value = ref('');
 const isValid = ref(false);
 const error = ref('');
 
 const validateNumbers = (value: number | undefined) => {
-	if (!props.inner.validation ||
-			props.inner.validation.min === undefined ||
-			props.inner.validation.max === undefined) return;
+	if (!props.validation ||
+			props.validation.min === undefined ||
+			props.validation.max === undefined) return;
 
-	const min = props.inner.validation.min;
-	const max = props.inner.validation.max;
+	const min = props.validation.min;
+	const max = props.validation.max;
 
 	if (value === undefined || value < min) {
 		isValid.value = false;
@@ -60,18 +67,18 @@ const onInput = (event: Event) => {
 	if (!event || !event.target) return;
 	value.value = (event.target as HTMLInputElement).value;
 
-	if (props.inner.type === 'number') {
+	if (props.type === 'number') {
 		const emitVal: number | undefined = value.value ? Number(value.value) : undefined;
 
 		validateNumbers(emitVal);
-		props.inner.onInput({
+		props.onInput({
 			event,
 			valueNumber: emitVal,
 			isValid: isValid.value,
 		});
 	}
-	if (props.inner.type === 'text') {
-		props.inner.onInput({
+	if (props.type === 'text') {
+		props.onInput({
 			event,
 			valueString: value.value.trim(),
 			isValid: isValid.value,

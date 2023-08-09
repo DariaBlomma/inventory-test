@@ -18,17 +18,15 @@
 		lang="ts"
 >
 import { reactive } from 'vue';
-import type { IInventoryItem } from '@/types';
+import type { InventoryDetail } from '@/types';
 
-interface IProps {
-	inner: {
-		item: IInventoryItem,
-		onClick?: () => void;
-	},
+interface Props {
+	item: InventoryDetail,
+	onClick?: () => void;
 }
 
-const props = defineProps<IProps>();
-const {item, onClick} = reactive(props.inner);
+const props = defineProps<Props>();
+const {item, onClick} = reactive(props);
 </script>
 
 <style

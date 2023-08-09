@@ -4,9 +4,9 @@
 	>
 		<div
 				class="error__message"
-				:class="{ visible: props.inner.error }"
+				:class="{ visible: props.error }"
 		>
-			{{ props.inner.error }}
+			{{ props.error }}
 		</div>
 	</div>
 </template>
@@ -15,13 +15,11 @@
 		setup
 		lang="ts"
 >
-import type { IMyErrorMessage } from '@/types';
-
-interface IProps {
-	inner: IMyErrorMessage,
+interface Props {
+	error: string;
 }
 
-const props = defineProps<IProps>();
+const props = defineProps<Props>();
 </script>
 
 
