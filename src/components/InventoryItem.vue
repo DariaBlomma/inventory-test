@@ -1,14 +1,14 @@
 <template>
 	<div
 			class="item"
-			@click="onClick"
+			@click="props.onClick"
 	>
 		<img
-				:src="`/inventoryImages/${item.image}.png`"
+				:src="`/inventoryImages/${props.item.image}.png`"
 				class="item__image"
 		>
 		<div class="item__amount">
-			<span class="item__amount--text">{{ item.amount }}</span>
+			<span class="item__amount--text">{{ props.item.amount }}</span>
 		</div>
 	</div>
 </template>
@@ -17,7 +17,6 @@
 		setup
 		lang="ts"
 >
-import { reactive } from 'vue';
 import type { InventoryDetail } from '@/types';
 
 interface Props {
@@ -26,7 +25,6 @@ interface Props {
 }
 
 const props = defineProps<Props>();
-const {item, onClick} = reactive(props);
 </script>
 
 <style

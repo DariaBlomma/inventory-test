@@ -31,8 +31,8 @@
 					name="Confirm"
 					:class="[
           `${props.dialogClass}__btn`,
-          `${props.dialogClass}__confirm-btn`]
-          "
+          `${props.dialogClass}__confirm-btn`
+          ]"
 					:is-disabled="!isInputValid"
 					@click="props.onConfirm({ value: inputNumberValue })"
 			/>

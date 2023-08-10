@@ -8,7 +8,7 @@
 				class="empty-content"
 		>
 			<div
-					v-for="(item, index) in 7"
+					v-for="(item, index) in emptyLines"
 					:key="index"
 					class="empty-content__elem"
 					:class="`empty-content__elem--${index}`"
@@ -21,6 +21,7 @@
 		setup
 		lang="ts"
 >
+const emptyLines = 7;
 </script>
 
 <style

@@ -24,6 +24,7 @@ const props = withDefaults(defineProps<Props>(), {
 	amount: 7,
 });
 </script>
+
 <style
 		scoped
 		lang="scss"

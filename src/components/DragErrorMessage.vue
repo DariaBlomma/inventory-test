@@ -1,5 +1,5 @@
 <template>
-	<span class="msg">{{ inventoryStore.dragError }}</span>
+	<span class="msg">{{ dragError }}</span>
 </template>
 
 <script
@@ -7,8 +7,10 @@
 		lang="ts"
 >
 import { useInventoryStore } from '@/stores';
+import { storeToRefs } from 'pinia';
 
 const inventoryStore = useInventoryStore();
+const {dragError} = storeToRefs(inventoryStore);
 </script>
 
 <style

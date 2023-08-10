@@ -1,12 +1,12 @@
 <template>
 	<div class="list">
 		<InventoryItem
-				v-for="item in inventoryStore.freeList"
+				v-for="item in freeList"
 				:key="item.type"
 				class="list__item"
 				:item="item"
 				draggable="true"
-				@dragstart="inventoryStore.onDragItemStart({ event: $event, item })"
+				@dragstart="onDragItemStart({ event: $event, item })"
 		/>
 	</div>
 </template>
@@ -15,10 +15,13 @@
 		setup
 		lang="ts"
 >
+import { storeToRefs } from 'pinia';
 import { useInventoryStore } from '@/stores';
 import InventoryItem from './InventoryItem.vue';
 
 const inventoryStore = useInventoryStore();
+const {freeList} = storeToRefs(inventoryStore);
+const {onDragItemStart} = inventoryStore;
 </script>
 
 <style

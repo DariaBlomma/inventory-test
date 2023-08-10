@@ -3,7 +3,7 @@
 		<div class="block inventory-detail">
 			<div class="flex-centered inventory-detail__upper-block">
 				<img
-						:src="`/inventoryImages/${inventoryStore.clickedItem?.image}.png`"
+						:src="`/inventoryImages/${clickedItem?.image}.png`"
 						class="inventory-detail__img"
 				>
 			</div>
@@ -11,7 +11,7 @@
 					class="empty-content"
 			>
 				<div
-						v-for="(item, index) in 6"
+						v-for="(item, index) in emptyPreloderLines"
 						:key="index"
 						class="empty-content__elem inventory-detail__stub"
 						:class="[`empty-content__elem--${index}`, `inventory-detail__stub--${index}`]"
@@ -32,7 +32,7 @@
 						placeholder="Enter amount"
 						:validation="{
                 min: 0,
-                max: inventoryStore.clickedItem?.amount,
+                max: clickedItem?.amount,
               }"
 						:onCancel="cancelClick"
 						:onConfirm="submitInventoryDelete"
@@ -46,6 +46,7 @@
 		setup
 		lang="ts"
 >
+import { storeToRefs } from 'pinia';
 import MyButton from '@/components/ui/MyButton.vue';
 import MyModal from '@/components/ui/MyModal.vue';
 import MyDialog from '@/components/ui/MyDialog.vue';
@@ -55,8 +56,11 @@ import {
 	useModalStore,
 } from '@/stores';
 
+const emptyPreloderLines = 6;
 const modalStore = useModalStore();
 const inventoryStore = useInventoryStore();
+const {clickedItem} = storeToRefs(inventoryStore);
+const {decreaseItemAmount} = inventoryStore;
 
 const cancelClick = () => {
 	modalStore.closeDialog();
@@ -64,8 +68,8 @@ const cancelClick = () => {
 
 const submitInventoryDelete = ({value}: OnDialogConfirm) => {
 	if (typeof value !== 'number') return;
-	inventoryStore.decreaseItemAmount(value);
-	if (inventoryStore.clickedItem === undefined) {
+	decreaseItemAmount(value);
+	if (clickedItem === undefined) {
 		modalStore.close();
 	}
 };

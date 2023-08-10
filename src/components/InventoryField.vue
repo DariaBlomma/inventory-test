@@ -11,27 +11,27 @@
 					class="field__cell"
 					:class="{
           'field__cell--isDraggedOver':
-          inventoryStore.dragOverParams?.colId === colIndex &&
-          inventoryStore.dragOverParams?.rowId === rowIndex
-        }"
+          draggedOverCell?.colId === colIndex &&
+          draggedOverCell?.rowId === rowIndex
+          }"
 					:data-row-id="rowIndex"
 					:data-col-id="colIndex"
 					:data-is-busy="false"
-					@dragover.prevent="inventoryStore.onDragOverCell"
-					@drop="inventoryStore.onDropItem"
+					@dragover.prevent="onDragOverCell"
+					@drop="onDropItem"
 			>
 				<div
-						v-for="item in inventoryStore.slotsList"
+						v-for="item in slotsList"
 						:key="item.type"
 				>
 					<InventoryItem
 							class="item-in-slot"
-							v-if="item.curRow === rowIndex &&
-              item.curCol === colIndex"
+							v-if="item.rowId === rowIndex &&
+              item.colId === colIndex"
 							:item="item"
 							@click="inventoryItemClickHandler(item)"
 							draggable="true"
-							@dragstart="inventoryStore.onDragItemStart({ event: $event, item })"
+							@dragstart="onDragItemStart({ event: $event, item })"
 					/>
 				</div>
 			</div>
@@ -43,6 +43,7 @@
 		setup
 		lang="ts"
 >
+import { storeToRefs } from 'pinia';
 import type { InventoryDetail } from '@/types';
 import InventoryItem from './InventoryItem.vue';
 import {
@@ -52,11 +53,23 @@ import {
 
 const rows: number = 5;
 const columns: number = 5;
+
 const modalStore = useModalStore();
 const inventoryStore = useInventoryStore();
+const {
+	slotsList,
+	draggedOverCell,
+} = storeToRefs(inventoryStore);
+const {
+	onDragItemStart,
+	setClickedItem,
+	onDropItem,
+	onDragOverCell,
+} = inventoryStore;
+
 
 const inventoryItemClickHandler = (item: InventoryDetail) => {
-	inventoryStore.setClickedItem(item);
+	setClickedItem(item);
 	modalStore.open();
 };
 </script>
