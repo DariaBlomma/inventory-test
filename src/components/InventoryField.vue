@@ -29,7 +29,7 @@
 							v-if="item.rowId === rowIndex &&
               item.colId === colIndex"
 							:item="item"
-							@click="inventoryItemClickHandler(item)"
+							@click="onItemClick(item)"
 							draggable="true"
 							@dragstart="onDragItemStart({ event: $event, item })"
 					/>
@@ -67,8 +67,7 @@ const {
 	onDragOverCell,
 } = inventoryStore;
 
-
-const inventoryItemClickHandler = (item: InventoryDetail) => {
+const onItemClick = (item: InventoryDetail) => {
 	setClickedItem(item);
 	modalStore.open();
 };

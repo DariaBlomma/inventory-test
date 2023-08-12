@@ -11,3 +11,8 @@ export interface InventoryDetail {
   image: string,
   list: ListType,
 }
+
+export interface CellParams {
+  colId: number;
+  rowId: number;
+}

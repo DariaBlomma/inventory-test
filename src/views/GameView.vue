@@ -15,7 +15,10 @@
 		setup
 		lang="ts"
 >
-import { onBeforeMount } from 'vue';
+import {
+	onBeforeMount,
+	onMounted,
+} from 'vue';
 import LeftSidebar from '@/components/LeftSidebar.vue';
 import BottomSidebar from '@/components/BottomSidebar.vue';
 import InventoryFeild from '@/components/InventoryField.vue';
@@ -25,9 +28,13 @@ import DragErrorMessage from '@/components/DragErrorMessage.vue';
 import { useInventoryStore } from '@/stores';
 
 const inventoryStore = useInventoryStore();
+const {getLists, markCellsBusy} = inventoryStore;
 
 onBeforeMount(() => {
-	inventoryStore.getLists();
+	getLists();
+});
+onMounted(() => {
+	markCellsBusy();
 });
 </script>
 

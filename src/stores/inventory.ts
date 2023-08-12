@@ -2,6 +2,7 @@ import type { UnwrapRef } from 'vue';
 import { ref } from 'vue';
 import { defineStore } from 'pinia';
 import type {
+  CellParams,
   DragOverDataset,
   InventoryDetail,
   ListType,
@@ -15,17 +16,13 @@ interface CellDataset extends DragOverDataset {
   colId: string,
 }
 
-interface CellParams {
-  colId: number;
-  rowId: number;
-}
-
 interface DragStartParams {
   event: DragEvent,
   item: UnwrapRef<InventoryDetail>,
 }
 
 export const useInventoryStore = defineStore('inventory', () => {
+  const busyCells = ref<CellParams[]>([]);
   const freeList = ref<InventoryDetail[]>(defaultFreeList);
   const slotsList = ref<InventoryDetail[]>([]);
   const clickedItem = ref<InventoryDetail | undefined>(undefined);
@@ -51,13 +48,48 @@ export const useInventoryStore = defineStore('inventory', () => {
   
   const dragAndDrop = useDragAndDrop<InventoryDetail, CellDataset, CellParams>(parseDragDataset, moveItem);
   
+  const markCellsBusy = () => {
+    const elems = document.querySelectorAll('.field__cell');
+    
+    const indexedCells: { [key: string]: HTMLElement } | {} = {};
+    elems.forEach(item => {
+      const dataset = item.dataset as CellDataset;
+      const cellId = `${dataset.rowId}-${dataset.colId}`;
+      indexedCells[cellId] = item;
+    });
+    
+    busyCells.value.forEach((busyCell) => {
+      const busyCellId = `${busyCell.rowId}-${busyCell.colId}`;
+      (indexedCells[busyCellId].dataset as CellDataset).isBusy = 'true';
+    });
+  };
+  
+  const addToBusyCells = (item: UnwrapRef<InventoryDetail>) => {
+    if (item.rowId === null || item.colId === null) {
+      throw Error('addToBusyCells: unexpected null in coords');
+      return;
+    }
+    busyCells.value.push({
+      colId: item.colId,
+      rowId: item.rowId,
+    });
+  };
+  
+  const removeFromBusyCells = (item: UnwrapRef<InventoryDetail>) => {
+    busyCells.value = busyCells.value.filter((cell) => {
+      return cell.rowId !== item.rowId && cell.colId !== item.colId;
+    });
+  };
+  
   const getLists = () => {
     const savedFreeList = LocalStorageHelper.getFreeList();
     const savedSlotsList = LocalStorageHelper.getSlotsList();
+    const savedBusyCells = LocalStorageHelper.getBusyCells();
     //* first load of the app
-    if (!savedFreeList || !savedSlotsList) return;
+    if (!savedFreeList || !savedSlotsList || !savedBusyCells) return;
     freeList.value = savedFreeList;
     slotsList.value = savedSlotsList;
+    busyCells.value = savedBusyCells;
   };
   
   const setClickedItem = (item: InventoryDetail) => {
@@ -92,10 +124,12 @@ export const useInventoryStore = defineStore('inventory', () => {
   };
   
   const onDropItem = (event: DragEvent) => {
+    const draggedItem = dragAndDrop.draggedItem.value;
+    if (!draggedItem) return;
+    removeFromBusyCells(draggedItem);
     dragAndDrop.onDrop(event);
-    
-    LocalStorageHelper.setFreeList(freeList.value);
-    LocalStorageHelper.setSlotsList(slotsList.value);
+    addToBusyCells(draggedItem);
+    saveSessionData();
   };
   
   /**
@@ -103,6 +137,12 @@ export const useInventoryStore = defineStore('inventory', () => {
    */
   const onDragOverCell = (event: DragEvent) => {
     dragAndDrop.onDragOver(event);
+  };
+  
+  const saveSessionData = () => {
+    LocalStorageHelper.setFreeList(freeList.value);
+    LocalStorageHelper.setSlotsList(slotsList.value);
+    LocalStorageHelper.setBusyCells(busyCells.value);
   };
   
   return {
@@ -119,5 +159,6 @@ export const useInventoryStore = defineStore('inventory', () => {
     onDragItemStart,
     onDropItem,
     onDragOverCell,
+    markCellsBusy,
   };
 });

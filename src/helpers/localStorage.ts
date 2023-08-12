@@ -1,5 +1,8 @@
 import { LOCAL_STORAGE } from '@/constants';
-import type { InventoryDetail } from '@/types';
+import type {
+  CellParams,
+  InventoryDetail,
+} from '@/types';
 
 
 export const LocalStorageHelper = {
@@ -25,12 +28,21 @@ export const LocalStorageHelper = {
     return data ? JSON.parse(data) : undefined;
   },
   
+  getBusyCells(): CellParams[] | undefined {
+    const data = this.getItem(LOCAL_STORAGE.BUSY_CELLS);
+    return data ? JSON.parse(data) : undefined;
+  },
+  
   setFreeList(list: InventoryDetail[]) {
     this.setItem(LOCAL_STORAGE.FREE_LIST, JSON.stringify(list));
   },
   
   setSlotsList(list: InventoryDetail[]) {
     this.setItem(LOCAL_STORAGE.SLOTS_LIST, JSON.stringify(list));
+  },
+  
+  setBusyCells(cells: CellParams[]) {
+    this.setItem(LOCAL_STORAGE.BUSY_CELLS, JSON.stringify(cells));
   },
   
   removeFreeList() {
